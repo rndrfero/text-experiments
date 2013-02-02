@@ -1,0 +1,120 @@
+<%
+  mm = MarketModel1.new
+%>
+
+<style>
+td.invert { background: #eee; }
+</style>
+
+<%= form_tag url_for(:action=>'index') do %>
+
+	<h3>The world</h3>
+
+		<small>Green after:</small> 
+		<%= text_field_tag 'x[MarketModel1::THRESHOLD]', MarketModel1::THRESHOLD, :size=>5 %> 
+		&nbsp;&nbsp;
+		<small>Max. marketers:</small> 
+		<%= text_field_tag 'x[MarketModel1::TOTAL_MAX_MARKETERS]', MarketModel1::TOTAL_MAX_MARKETERS, :size=>5 %> 
+		&nbsp;&nbsp;
+		<small>Max. clients:</small> 
+		<%= text_field_tag 'x[MarketModel1::TOTAL_MAX_CLIENTS]',  MarketModel1::TOTAL_MAX_CLIENTS, :size=>5 %> 
+		&nbsp;&nbsp;
+		<small>per sms income:</small>
+		<b><%= text_field_tag 'x[MarketModel1::SMS_INCOME]', MarketModel1::SMS_INCOME, :size=>4 %></b>
+
+	<h3>Clients & Plans</h3>
+
+		<small>NORO Incomes:</small> 
+		<%= text_field_tag 'x[Client1::INCOMES]', Client1::INCOMES.join(', ') %> &nbsp;&nbsp;
+		<small>NORO Distribution:</small> 
+		<%= text_field_tag 'x[Client1::ROUND]', Client1::ROUND.join(', ') %>
+	
+		&nbsp;&nbsp;&nbsp;&nbsp;
+	
+		<small>+SMS:</small> <%= text_field_tag 'x[Client1::SMS_SPEED]', Client1::SMS_SPEED, :size=>3 %> 
+		<small>to max:</small> <%= text_field_tag 'x[Client1::SMS_MAX]', Client1::SMS_MAX, :size=>3 %>
+		<small>+ fixed tariff</small> <%= text_field_tag 'x[Client1::SMS_TARIFF]', Client1::SMS_TARIFF, :size=>3 %>
+		&nbsp;&nbsp;&nbsp;
+	
+	<h3>Marketers</h3>
+
+		<small>+clients:</small> <%= text_field_tag 'x[Marketer1::PROD_CLIENTS]', Marketer1::PROD_CLIENTS, :size=>1 %>
+		<small>to max.</small> <%= text_field_tag 'x[Marketer1::MAX_CLIENTS]', Marketer1::MAX_CLIENTS, :size=>1 %> 
+		&nbsp;&nbsp; &nbsp;&nbsp;
+		<small>+marketers:</small> <%= text_field_tag 'x[Marketer1::PROD_MARKETERS]', Marketer1::PROD_MARKETERS, :size=>1 %> 
+		<small>to max.:</small> <%= text_field_tag 'x[Marketer1::MAX_MARKETERS]', Marketer1::MAX_MARKETERS, :size=>1 %> 
+		&nbsp;&nbsp;&nbsp;
+
+		<small>Level commisions:</small>  
+		<%= text_field_tag 'x[Marketer1::COMMISSIONS]', Marketer1::COMMISSIONS.join(', ') %>  &nbsp;&nbsp;
+		<small>Level thrashold (sum client./mark.):</small> 
+		<%= text_field_tag 'x[Marketer1::THRASH_SUM]', Marketer1::THRASH_SUM.join(', ') %>
+
+	<br/><br/>
+	<%= submit_tag 'Prepocitaj, pico!' %>
+
+<% end %>
+
+ 
+<br/>
+
+<table>
+	<thead>
+		<tr>
+			<th> Mon </th>
+			<th> #M </th>
+			<th> #C </th>
+			<th> &sum; Incm </th>
+			<th> &sum; Comm </th>
+			<th> &sum; Prft </th>
+			<th> Seeders comfort </th>
+			<th class="invert"> M0 </th>
+			<th class="invert"> M1 </th>
+			<th class="invert"> M2 </th>
+			<th class="invert"> M3 </th>
+			<th class="invert"> M4 </th>
+			<th> #SMS </th>
+			<th> DSP </th>
+			<th> &sum; Incm </th>
+			<th> &sum; Comm </th>
+			<th> &sum; Prft </th>
+		</tr>
+	</thead>
+	<tbody>
+		
+<% MarketModel1::MONTHS.times do |index| %>
+<% mm.yo! %>
+
+	<tr id="month-<%= index %>" class="month-detail" style="display: none;">
+		<td colspan="100">
+			<%= render :partial=>'details', :object=>mm.all_marketers[0..15] %>
+		</td>
+	</tr>
+  
+  <tr onclick=" $('.month-detail:visible').hide(); $('#month-<%= index %>').show();">
+    <td> <%= index+1 %>. </td>
+    <td> <i><%= mm.all_marketers.size %></i> </td>
+    <td> <i><%= mm.all_clients.size %></i> </td>
+    <td> <%= i = mm.all_marketers.inject(0){ |ret, x| ret+=x.income(:income_noro) }.to_i %> </td>
+		<td> <%= c = mm.all_marketers.inject(0){ |ret, x| ret+=x.comm(:income_noro) }.to_i %> </td>
+		<td> <b><%=thrsh (i-c).to_i %></b> </td>
+		<td> <%= mm.marketers.map{ |x| x.comm(:income_noro).to_i }.join(', ') %> </td>
+		<td class="invert"> <i><%= mm.all_marketers.select{ |x| x.level == 0 }.size %></i> </td>
+		<td class="invert"> <i><%= mm.all_marketers.select{ |x| x.level == 1 }.size %></i> </td>
+		<td class="invert"> <i><%= mm.all_marketers.select{ |x| x.level == 2 }.size %></i> </td>
+		<td class="invert"> <i><%= mm.all_marketers.select{ |x| x.level == 3 }.size %></i> </td>
+		<td class="invert"> <i><%= mm.all_marketers.select{ |x| x.level == 4 }.size %></i> </td>
+		<td> <%= num_sms = mm.all_marketers.inject(0){ |ret,x| ret+=x.num_sms } %> </td>
+		<td> <%= (num_sms*MarketModel1::SMS_INCOME).to_i %> </td>
+    <td> <%= i = mm.all_marketers.inject(0){ |ret, x| ret+=x.income(:income_sms) }.to_i %> </td>
+		<td> <%= c = mm.all_marketers.inject(0){ |ret, x| ret+=x.comm(:income_sms) }.to_i %> </td>		
+		<td> <b><%=thrsh (i-c).to_i %></b> </td>
+	</tr>
+		
+		
+<% mm.flush! %>
+<% end %>
+
+  </tbody>
+</table>
+

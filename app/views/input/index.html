@@ -1,0 +1,10 @@
+<%= flash[:notice] %><br/>
+
+<%= form_tag '/put' do %>
+
+  <input type="text" id="input" name="input" maxlength="60" size="60"/> 
+
+  <%= submit_tag 'OK!' %>
+
+<% end %>
+

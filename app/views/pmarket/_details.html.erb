@@ -1,0 +1,60 @@
+			
+			<table class="inset">
+				<thead>
+					<tr>
+						<th> Lev </th>
+						<th> Name </th>
+						<th> #C </th>
+						<th> #M </th>
+						
+						<th>N income</th>
+						<th>N commision</th>
+						<th>N profit</th>
+						
+						<th>#SMS</th>
+						<th>SMS income</th>
+						<th>SMS commision</th>
+						<th>SMS profit</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% for m in details %>
+					  <tr>
+						  <td><%= m.level %> <small><%= (Marketer1::COMMISSIONS[m.level]*100).to_i %>%</small> </td>
+						  <td> <small><%= m.name %></small> </td>
+						  <td>
+						    <%= m.clients.size %>
+						    <small><%= m.clients.map{ |x| x.plan }.join('') %></small>
+						  </td>
+						  <td>
+						    <%= m.marketers.size %>
+						    <small><%= m.marketers.map{ |x| x.level }.join('') %></small>
+						  </td>
+					
+						  <td> 
+						    <%=prc a=m.income(:income_noro) %> 
+							  <small><%=prc m.income_direct(:income_noro)%> + <%=prc m.income_indirect(:income_noro) %></small>  
+						  </td>
+						  <td> 
+						    <b><%=prc b=m.comm(:income_noro) %></b>
+							  <small><%=prc m.comm_direct(:income_noro)%> + <%=prc m.comm_indirect(:income_noro) %></small>  
+							</td>
+							<td> <%=prc a-b %> </td>
+
+							<td> <i><%= m.num_sms %></i> </td>
+						  <td> 
+						     <%=prc a=m.income(:income_sms)%> 
+							  <small><%=prc m.income_direct(:income_sms)%> + <%=prc m.income_indirect(:income_sms) %></small>  
+							</td>
+						  <td> 
+						    <b><%=prc b=m.comm(:income_sms) %></b>
+							  <small><%=prc m.comm_direct(:income_sms)%> + <%=prc m.comm_indirect(:income_sms) %></small>  
+							</td>
+							<td> <%=prc a-b %> </td>
+						</td>
+						
+					<% end %>
+				</tbody>
+			</table>
+
+

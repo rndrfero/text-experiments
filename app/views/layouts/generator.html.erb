@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />		
+		<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+		
+	  <meta name="keywords" content="TODO" />
+	  <meta name="description" content="TODO" />		
+	
+		<title>Cafe Alternative 2</title>
+		
+		<link type="text/css" rel="Stylesheet" media="all" href="/index.css" />		
+		
+		<script src="/jquery-1.8.3.min.js"></script>
+		<script src="/bigtext.js"></script>
+		
+		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Varela">
+		
+		<style>
+			body { font-family: 'Arial', serif; font-weight: bold; color: white; background: black; }
+			#Text { margin-top: 10em; <% unless @no_uppercase %> text-transform: uppercase; <% end %> }
+	  </style>
+
+		<% timeout = params[:timeout]||10000 %>
+	
+		<script type="text/JavaScript">
+			function timedRefresh(timeoutPeriod) { setTimeout("location.reload(true);",timeoutPeriod); }
+			window.onload = function () { timedRefresh(<%= timeout %>); }		
+		</script>
+	
+
+	  <script>
+			$(function(){
+				$('.bigtext').bigtext({
+				  childSelector: '> *'	
+				});				
+			});
+	  </script>
+
+	</head>
+	<body>		
+		<div id="Text" class="bigtext">
+			<div><%= @string %></div>
+		</div>				
+	</body>
+</html>
+
+
+
+
