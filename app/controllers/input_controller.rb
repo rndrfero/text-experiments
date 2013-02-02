@@ -9,27 +9,33 @@ class InputController < ApplicationController
       flash.now[:notice] = 'prazdny nemozes'
       render :action=>'index'
     else    
-      session[:input] ||= []
-      session[:input].push params[:input]
+      cache = Rails.cache.read(:input)
+      cache ||= []
+      cache.push params[:input]
+      Rails.cache.write(:input, cache)
       flash[:notice] = 'som pridal'
       redirect_to :action=>'index'
     end
   end
   
   def output
-    session[:input] = ['cafe.kinderzimmer.sk'] if session[:input].blank?
+    cache = Rails.cache.read(:input)
+    cache = ['cafe.kinderzimmer.sk'] if cache.blank? 
     
-    @string = session[:input][0]
-    session[:input] = session[:input][1..(session[:input].size-1)]
+    @string = cache[0]
+    cache = cache[1..(cache.size-1)]
+
+    Rails.cache.write(:input, cache)
 
     @no_uppercase = true
     render :action=>'output', :layout=>'generator'
   end
   
   def reset
-    session[:input] = nil
+    Rails.cache.write(:input, nil)
     output
   end
+  
   
   
   
